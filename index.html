@@ -293,9 +293,17 @@
     var finale = document.getElementById('finale');
     if(done === 6){
       if(flag){ flag.style.transition='opacity .6s ease'; flag.setAttribute('opacity','1'); }
-      finale.classList.add('show');
       buildLink();
-      if(prevDone !== null && prevDone < 6) celebrate();
+      if(prevDone !== null && prevDone < 6){
+        // Acabou de completar: roda a celebração INTEIRA e só depois direciona
+        var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        celebrate();
+        if(rm){ finale.classList.add('show'); }
+        else { setTimeout(function(){ finale.classList.add('show'); finale.scrollIntoView({behavior:'smooth'}); }, 5000); }
+      } else {
+        // Já estava completo (recarregou a página): mostra direto
+        finale.classList.add('show');
+      }
     } else {
       finale.classList.remove('show');
       if(flag) flag.setAttribute('opacity','0');
