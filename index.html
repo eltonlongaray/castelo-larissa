@@ -196,7 +196,7 @@
     </div>
     <!-- 6 · ARQUÉTIPO (por último, depois da reflexão) -->
     <div class="q" data-idx="5">
-      <div class="q-head"><div class="q-num">6</div><div><div class="q-title">E por fim: qual é o seu arquétipo de marca?</div><div class="q-why">Agora que você refletiu sobre quem você é, faça o teste e escreva o resultado — o <b>principal</b> e o <b>secundário</b>. Ele define a personalidade da marca (cores, tom, jeito).</div></div></div>
+      <div class="q-head"><div class="q-num">6</div><div><div class="q-title">E por fim: qual é o seu arquétipo de marca?</div><div class="q-why">Agora que você refletiu sobre quem você é, faça o teste — o resultado (as <b>3 maiores</b>) aparece aqui <b>automaticamente</b> ✨. Depois é só colocar a pedra.</div></div></div>
       <a class="test-link" href="teste/" target="_blank" rel="noopener">🔮 Fazer o teste de arquétipos</a>
       <textarea placeholder="Ex: Principal Cuidadora, secundário Maga..."></textarea>
       <div class="q-foot"><button class="btn">Colocar pedra 🧱</button><span class="check">✓ Pedra colocada</span></div>
@@ -405,5 +405,17 @@
   }
 
   refresh();
+
+  // === Auto-preenche a pergunta 6 (arquétipo) com o resultado do teste ===
+  function autofillArq(){
+    var card = document.querySelector('.q[data-idx="5"]');
+    if(!card) return;
+    var ta = card.querySelector('textarea');
+    var res=''; try{ res = localStorage.getItem('castelo-larissa-arq-result')||''; }catch(e){}
+    if(res && !card.classList.contains('done') && ta.value.trim()===''){ ta.value = res; }
+  }
+  window.addEventListener('focus', autofillArq);
+  window.addEventListener('storage', function(e){ if(e.key==='castelo-larissa-arq-result') autofillArq(); });
+  autofillArq();
 })();
 </script>

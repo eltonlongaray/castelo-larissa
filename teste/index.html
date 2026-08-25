@@ -87,10 +87,11 @@
 
   <div class="result" id="result">
     <p class="eyebrow">O seu universo de marca</p>
-    <div class="rcard"><span class="tag">Arquétipo principal</span><h2 id="mainName">—</h2><p id="mainDesc"></p></div>
-    <div class="rcard"><span class="tag">Arquétipo secundário</span><h2 id="secName">—</h2><p id="secDesc"></p></div>
-    <p class="note">Anote esses dois — é a resposta da <b>pergunta 1</b> do seu castelo. 🏰</p>
-    <a class="back" id="backLink" href="#">🧱 Voltar pro castelo</a>
+    <div class="rcard"><span class="tag">1º · Principal</span><h2 id="r0name">—</h2><p id="r0desc"></p></div>
+    <div class="rcard"><span class="tag">2º · Secundário</span><h2 id="r1name">—</h2><p id="r1desc"></p></div>
+    <div class="rcard"><span class="tag">3º · Terciário</span><h2 id="r2name">—</h2><p id="r2desc"></p></div>
+    <p class="note">✨ Já preenchi isso na <b>pergunta 6</b> do seu castelo — é só voltar lá e <b>colocar a pedra</b>! 🏰</p>
+    <a class="back" id="backLink" href="../">🧱 Voltar pro castelo</a>
   </div>
 
   <p class="foot">Baseado nos 12 arquétipos de marca. Feito com carinho pra você. 🌙</p>
@@ -146,11 +147,14 @@
 
   document.getElementById('revealBtn').addEventListener('click', function(){
     var ranked = ARQ.map(function(a,i){ return {a:a, s:scores[i]||0}; }).sort(function(x,y){ return y.s - x.s; });
-    var main = ranked[0], sec = ranked[1];
-    document.getElementById('mainName').textContent = main.a.em+" "+main.a.name;
-    document.getElementById('mainDesc').textContent = main.a.desc;
-    document.getElementById('secName').textContent = sec.a.em+" "+sec.a.name;
-    document.getElementById('secDesc').textContent = sec.a.desc;
+    var top = ranked.slice(0,3);
+    for(var j=0;j<3;j++){
+      document.getElementById('r'+j+'name').textContent = top[j].a.em+" "+top[j].a.name+"  ("+top[j].s+"/3)";
+      document.getElementById('r'+j+'desc').textContent = top[j].a.desc;
+    }
+    // Salva o resultado pro castelo preencher a pergunta 6 automaticamente
+    var resultStr = "Principal: "+top[0].a.name+" ("+top[0].s+"/3) · Secundário: "+top[1].a.name+" ("+top[1].s+"/3) · Terciário: "+top[2].a.name+" ("+top[2].s+"/3)";
+    try{ localStorage.setItem('castelo-larissa-arq-result', resultStr); }catch(e){}
     var r = document.getElementById('result'); r.classList.add('show');
     r.scrollIntoView({behavior:'smooth'});
   });
