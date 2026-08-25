@@ -1,0 +1,409 @@
+<title>Castelo da Larissa</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Mulish:wght@400;500;600;700;800&display=swap">
+
+<style>
+  /* ============================================================
+     O CASTELO DA LARISSA — Andar 1 (game-like intake)
+     Mundo: castelo mágico ao entardecer (committed single-world)
+     ============================================================ */
+  :root{
+    --sky-top:#2a1e3d; --sky-mid:#6b3f66; --sky-low:#c9788a; --glow:#f2c879;
+    --stone:#e9dcc6; --stone-2:#d8c6a8; --stone-line:#b89f78;
+    --gold:#e0a63f; --gold-lite:#f6d488;
+    --rose:#d98a8a;
+    --ink:#3a2a2f; --ink-soft:#6d5a5a; --cream:#fbf4e7;
+    --good:#5f9e6b;
+    --card:#fffaf0; --line:rgba(58,42,47,.14);
+  }
+  *{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    margin:0; color:var(--ink);
+    font-family:"Mulish", ui-sans-serif, system-ui, sans-serif; line-height:1.6;
+    background:linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 38%, var(--sky-low) 100%);
+    -webkit-font-smoothing:antialiased; overflow-x:hidden; min-height:100vh;
+  }
+  .wrap{ width:100%; max-width:44rem; margin-inline:auto; padding:1.2rem clamp(.9rem,4vw,1.6rem) 4rem; }
+
+  h1,h2,h3{ font-family:"Cinzel", Georgia, serif; margin:0; font-weight:600; letter-spacing:.01em; }
+
+  /* ---------- HERO / CASTELO ---------- */
+  .hero{ text-align:center; color:var(--cream); padding-top:.6rem; }
+  .hero .eyebrow{ font-family:"Cinzel",serif; letter-spacing:.28em; text-transform:uppercase; font-size:.7rem; color:var(--gold-lite); }
+  .hero h1{ font-size:clamp(1.8rem,6vw,2.8rem); margin:.5rem 0 .2rem; text-shadow:0 2px 20px rgba(0,0,0,.3); }
+  .hero .sub{ font-size:.98rem; color:#f3e4d6; opacity:.92; }
+
+  .castle-stage{ position:relative; margin:1rem auto .4rem; width:min(100%,22rem); }
+  .stars{ position:absolute; inset:0; pointer-events:none;
+    background-image:radial-gradient(1.5px 1.5px at 15% 25%,rgba(255,255,255,.8),transparent),radial-gradient(1.5px 1.5px at 80% 15%,rgba(255,255,255,.6),transparent),radial-gradient(1px 1px at 55% 35%,rgba(255,255,255,.7),transparent);
+    animation:twinkle 5s ease-in-out infinite; }
+  @keyframes twinkle{0%,100%{opacity:.4}50%{opacity:.9}}
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+  svg.castle{ display:block; width:100%; height:auto; filter:drop-shadow(0 10px 20px rgba(0,0,0,.25)); }
+
+  .progress-txt{ text-align:center; color:var(--cream); font-weight:700; margin:.3rem 0 .1rem; font-size:1rem; }
+  .progress-txt b{ color:var(--gold-lite); }
+  .bricks{ display:flex; gap:.4rem; justify-content:center; margin:.5rem 0 1.2rem; flex-wrap:wrap; }
+  .brick{ width:2.5rem; height:1.4rem; border-radius:4px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22);
+    display:grid; place-items:center; font-size:.8rem; color:rgba(255,255,255,.5); transition:all .4s ease; }
+  .brick.on{ background:linear-gradient(180deg,var(--gold-lite),var(--gold)); border-color:var(--gold-lite); color:#5a3d05;
+    box-shadow:0 4px 14px rgba(224,166,63,.5); transform:translateY(-2px); }
+
+  /* ---------- HOW / INTRO ---------- */
+  .howto{ background:rgba(255,250,240,.94); border-radius:16px; padding:1rem 1.1rem; margin-bottom:1.3rem; box-shadow:0 8px 30px rgba(0,0,0,.18); }
+  .howto p{ margin:.2rem 0; font-size:.92rem; color:var(--ink-soft); }
+  .howto b{ color:var(--ink); }
+  .test-link{ display:inline-flex; align-items:center; gap:.45rem; margin-top:.8rem; text-decoration:none; font-weight:700; font-size:.92rem;
+    background:linear-gradient(180deg,#8455a8,#5a3378); color:#fff; padding:.65em 1.15em; border-radius:999px; box-shadow:0 6px 16px rgba(90,51,120,.4); transition:transform .2s; }
+  .test-link:hover{ transform:translateY(-1px); }
+
+  /* ---------- QUESTION CARDS ---------- */
+  .q{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:1.1rem 1.1rem 1.2rem; margin-bottom:1rem;
+    box-shadow:0 6px 22px rgba(0,0,0,.14); transition:border-color .3s ease, box-shadow .3s ease; }
+  .q.done{ border-color:var(--gold); box-shadow:0 6px 22px rgba(224,166,63,.28); }
+  .q-head{ display:flex; align-items:flex-start; gap:.7rem; }
+  .q-num{ flex:none; width:2rem; height:2rem; border-radius:50%; display:grid; place-items:center;
+    font-family:"Cinzel",serif; font-weight:700; background:linear-gradient(180deg,var(--stone),var(--stone-2)); color:var(--ink); border:1px solid var(--stone-line); }
+  .q.done .q-num{ background:linear-gradient(180deg,var(--gold-lite),var(--gold)); color:#5a3d05; border-color:var(--gold); }
+  .q-title{ font-weight:700; font-size:1.02rem; color:var(--ink); }
+  .q-why{ font-size:.8rem; color:var(--ink-soft); margin-top:.15rem; font-style:italic; }
+  textarea{ width:100%; margin-top:.8rem; min-height:5rem; resize:vertical; border:1px solid var(--line); border-radius:10px;
+    padding:.7rem .8rem; font-family:inherit; font-size:1rem; color:var(--ink); background:#fffdf8; line-height:1.5; }
+  textarea:focus{ outline:2px solid var(--gold); outline-offset:1px; }
+  textarea[readonly]{ background:#f6efe0; color:var(--ink-soft); }
+  .q-foot{ display:flex; align-items:center; gap:.7rem; margin-top:.7rem; flex-wrap:wrap; }
+  .btn{ font-family:inherit; font-weight:700; font-size:.95rem; border:none; border-radius:999px; padding:.7em 1.3em; cursor:pointer;
+    background:linear-gradient(180deg,var(--gold-lite),var(--gold)); color:#4a3204; transition:transform .2s ease, box-shadow .2s ease; }
+  .btn:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(224,166,63,.4); }
+  .btn:disabled{ opacity:.5; cursor:not-allowed; }
+  .btn.ghost{ background:transparent; color:var(--ink-soft); border:1px solid var(--line); }
+  .check{ display:none; align-items:center; gap:.35rem; color:var(--good); font-weight:700; font-size:.9rem; }
+  .q.done .check{ display:inline-flex; }
+  .warn{ display:none; width:100%; margin-top:.6rem; background:#fff4d6; border:1px solid var(--gold); border-radius:10px;
+    padding:.6rem .8rem; font-size:.86rem; color:#7a5205; }
+  .warn.show{ display:block; }
+
+  /* ---------- FINALE ---------- */
+  .finale{ display:none; text-align:center; background:rgba(255,250,240,.96); border-radius:18px; padding:1.6rem 1.2rem; margin-top:1.4rem;
+    box-shadow:0 10px 34px rgba(0,0,0,.2); border:2px solid var(--gold); }
+  .finale.show{ display:block; animation:pop .5s ease; }
+  @keyframes pop{ from{transform:scale(.95);opacity:0} to{transform:scale(1);opacity:1} }
+  .finale h2{ font-size:1.4rem; color:var(--ink); }
+  .finale p{ color:var(--ink-soft); font-size:.95rem; margin:.5rem 0 1rem; }
+  .btn-wpp{ display:inline-flex; align-items:center; gap:.5rem; text-decoration:none; font-weight:800; font-size:1.02rem;
+    background:#25d366; color:#fff; padding:.9em 1.6em; border-radius:999px; box-shadow:0 8px 22px rgba(37,211,102,.4); }
+  .btn-wpp:hover{ transform:translateY(-1px); }
+
+  .foot{ text-align:center; color:#f3e4d6; opacity:.85; font-size:.82rem; margin-top:1.6rem; }
+</style>
+
+<div class="wrap">
+
+  <!-- ============ HERO ============ -->
+  <div class="hero">
+    <p class="eyebrow">Andar 1 · A Fundação</p>
+    <div class="castle-stage">
+      <div class="stars" aria-hidden="true"></div>
+      <svg class="castle" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- lua -->
+        <circle cx="245" cy="42" r="20" fill="#f7e9c8" opacity=".85"/>
+        <!-- torres -->
+        <g fill="#cdb98f" stroke="#a98f63" stroke-width="1.5">
+          <rect x="55" y="78" width="34" height="80"/>
+          <rect x="211" y="78" width="34" height="80"/>
+          <rect x="110" y="60" width="80" height="98"/>
+        </g>
+        <!-- ameias -->
+        <g fill="#cdb98f">
+          <rect x="55" y="70" width="8" height="10"/><rect x="68" y="70" width="8" height="10"/><rect x="81" y="70" width="8" height="10"/>
+          <rect x="211" y="70" width="8" height="10"/><rect x="224" y="70" width="8" height="10"/><rect x="237" y="70" width="8" height="10"/>
+          <rect x="110" y="52" width="9" height="10"/><rect x="127" y="52" width="9" height="10"/><rect x="145" y="52" width="10" height="10"/><rect x="163" y="52" width="9" height="10"/><rect x="181" y="52" width="9" height="10"/>
+        </g>
+        <!-- telhados -->
+        <polygon points="55,60 89,60 72,38" fill="#b06a72"/>
+        <polygon points="211,60 245,60 228,38" fill="#b06a72"/>
+        <polygon points="106,40 194,40 150,10" fill="#a85a74"/>
+        <!-- bandeira (aparece completa) -->
+        <line id="flagpole" x1="150" y1="10" x2="150" y2="-8" stroke="#7a5205" stroke-width="2"/>
+        <polygon id="flag" points="150,-8 168,-3 150,2" fill="#e0a63f" opacity="0"/>
+        <!-- porta -->
+        <path d="M138 158 v-26 a12 12 0 0 1 24 0 v26 z" fill="#7a5636"/>
+        <!-- janelas -->
+        <circle cx="72" cy="105" r="6" fill="#f2c879" opacity=".85"/>
+        <circle cx="228" cy="105" r="6" fill="#f2c879" opacity=".85"/>
+        <rect x="126" y="78" width="10" height="16" rx="5" fill="#f2c879" opacity=".85"/>
+        <rect x="164" y="78" width="10" height="16" rx="5" fill="#f2c879" opacity=".85"/>
+        <!-- chao -->
+        <rect x="20" y="158" width="260" height="6" fill="#8a7350"/>
+      </svg>
+    </div>
+    <p class="hero eyebrow" style="letter-spacing:.1em">Construindo o castelo da</p>
+    <h1>Larissa</h1>
+    <p class="sub">Cada resposta coloca uma pedra na fundação 🧱</p>
+    <p class="progress-txt"><b id="count">0</b> de 6 pedras colocadas</p>
+    <div class="bricks" id="bricks">
+      <div class="brick" data-b="0">1</div><div class="brick" data-b="1">2</div><div class="brick" data-b="2">3</div>
+      <div class="brick" data-b="3">4</div><div class="brick" data-b="4">5</div><div class="brick" data-b="5">6</div>
+    </div>
+  </div>
+
+  <!-- ============ COMO FUNCIONA ============ -->
+  <div class="howto">
+    <p><b>Oi, Larissa! 👋</b> Esse é o primeiro andar do seu castelo — a <b>identidade da sua marca</b>.</p>
+    <p>Responda cada pergunta com <b>calma e verdade</b> (não existe resposta errada) e toque em <b>“Colocar pedra”</b>. Quando as 6 estiverem no lugar, é só me enviar. 💛</p>
+    <p style="font-size:.84rem;">✏️ Pode editar depois se quiser — mas se mudar algo já enviado, <b>me avise</b> pra eu atualizar.</p>
+  </div>
+
+  <!-- ============ PERGUNTAS ============ -->
+  <div id="questions">
+    <!-- 1 -->
+    <div class="q" data-idx="0">
+      <div class="q-head"><div class="q-num">1</div><div><div class="q-title">Decisões importantes da sua vida</div><div class="q-why">Quais foram e o que te motivou em cada uma? Isso revela a sua essência de verdade.</div></div></div>
+      <textarea placeholder="Escreva aqui..."></textarea>
+      <div class="q-foot"><button class="btn">Colocar pedra 🧱</button><span class="check">✓ Pedra colocada</span></div>
+      <div class="warn">⚠️ Você mudou uma resposta que já tinha enviado. Lembra de <b>avisar o Élton</b> sobre a alteração! 💬</div>
+    </div>
+    <!-- 2 -->
+    <div class="q" data-idx="1">
+      <div class="q-head"><div class="q-num">2</div><div><div class="q-title">O que te emociona?</div><div class="q-why">Músicas, filmes, livros ou viagens que te representam. Mapeia o seu universo estético.</div></div></div>
+      <textarea placeholder="Escreva aqui..."></textarea>
+      <div class="q-foot"><button class="btn">Colocar pedra 🧱</button><span class="check">✓ Pedra colocada</span></div>
+      <div class="warn">⚠️ Você mudou uma resposta que já tinha enviado. Lembra de <b>avisar o Élton</b> sobre a alteração! 💬</div>
+    </div>
+    <!-- 3 -->
+    <div class="q" data-idx="2">
+      <div class="q-head"><div class="q-num">3</div><div><div class="q-title">Sonhos, medos, valores e forças</div><div class="q-why">O que você ama fazer e quais seus pontos fortes? É o "porquê" da sua marca.</div></div></div>
+      <textarea placeholder="Escreva aqui..."></textarea>
+      <div class="q-foot"><button class="btn">Colocar pedra 🧱</button><span class="check">✓ Pedra colocada</span></div>
+      <div class="warn">⚠️ Você mudou uma resposta que já tinha enviado. Lembra de <b>avisar o Élton</b> sobre a alteração! 💬</div>
+    </div>
+    <!-- 4 -->
+    <div class="q" data-idx="3">
+      <div class="q-head"><div class="q-num">4</div><div><div class="q-title">Suas 5 maiores habilidades e paixões</div><div class="q-why">Mostra o que você pode ensinar além da massagem (semente dos próximos andares).</div></div></div>
+      <textarea placeholder="1... 2... 3... 4... 5..."></textarea>
+      <div class="q-foot"><button class="btn">Colocar pedra 🧱</button><span class="check">✓ Pedra colocada</span></div>
+      <div class="warn">⚠️ Você mudou uma resposta que já tinha enviado. Lembra de <b>avisar o Élton</b> sobre a alteração! 💬</div>
+    </div>
+    <!-- 5 -->
+    <div class="q" data-idx="4">
+      <div class="q-head"><div class="q-num">5</div><div><div class="q-title">Quem mais você poderia ajudar?</div><div class="q-why">Fora a massagem — e de que forma? Amplia o público e gera ideias de produto.</div></div></div>
+      <textarea placeholder="Escreva aqui..."></textarea>
+      <div class="q-foot"><button class="btn">Colocar pedra 🧱</button><span class="check">✓ Pedra colocada</span></div>
+      <div class="warn">⚠️ Você mudou uma resposta que já tinha enviado. Lembra de <b>avisar o Élton</b> sobre a alteração! 💬</div>
+    </div>
+    <!-- 6 · ARQUÉTIPO (por último, depois da reflexão) -->
+    <div class="q" data-idx="5">
+      <div class="q-head"><div class="q-num">6</div><div><div class="q-title">E por fim: qual é o seu arquétipo de marca?</div><div class="q-why">Agora que você refletiu sobre quem você é, faça o teste e escreva o resultado — o <b>principal</b> e o <b>secundário</b>. Ele define a personalidade da marca (cores, tom, jeito).</div></div></div>
+      <a class="test-link" href="teste/" target="_blank" rel="noopener">🔮 Fazer o teste de arquétipos</a>
+      <textarea placeholder="Ex: Principal Cuidadora, secundário Maga..."></textarea>
+      <div class="q-foot"><button class="btn">Colocar pedra 🧱</button><span class="check">✓ Pedra colocada</span></div>
+      <div class="warn">⚠️ Você mudou uma resposta que já tinha enviado. Lembra de <b>avisar o Élton</b> sobre a alteração! 💬</div>
+    </div>
+  </div>
+
+  <!-- ============ FINALE ============ -->
+  <div class="finale" id="finale">
+    <div style="font-size:2.4rem">🏰✨</div>
+    <h2>Fundação completa!</h2>
+    <p>Você colocou todas as pedras do primeiro andar. Agora é só me enviar suas respostas que eu começo a construir a sua marca. 💛</p>
+    <a class="btn-wpp" id="sendBtn" href="#" target="_blank" rel="noopener">📲 Enviar minhas respostas pro Élton</a>
+  </div>
+
+  <p class="foot">Feito com carinho pra você, Larissa. 🌙</p>
+</div>
+
+<script>
+(function(){
+  var PHONE = "5551982276577"; // WhatsApp do Elton
+  var KEY = "castelo-larissa-andar1";
+  var TITLES = [
+    "Decisões importantes","O que te emociona","Sonhos/medos/valores/forças",
+    "5 habilidades e paixões","Quem mais poderia ajudar","Arquétipo de marca"
+  ];
+  var qs = Array.prototype.slice.call(document.querySelectorAll('.q'));
+  var state = load();
+
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+
+  qs.forEach(function(card){
+    var idx = card.getAttribute('data-idx');
+    var ta = card.querySelector('textarea');
+    var btn = card.querySelector('.btn');
+    var warn = card.querySelector('.warn');
+    var st = state[idx];
+
+    if(st && st.sent){
+      ta.value = st.answer; setSent(card, ta, btn, true);
+    }
+
+    btn.addEventListener('click', function(){
+      var sentBefore = card.classList.contains('done');
+      if(!sentBefore){
+        // enviar
+        if(ta.value.trim() === ''){ ta.focus(); ta.style.outline='2px solid #d98a8a'; setTimeout(function(){ta.style.outline='';},1200); return; }
+        state[idx] = { answer: ta.value.trim(), sent:true }; save();
+        setSent(card, ta, btn, true);
+        warn.classList.remove('show');
+      } else {
+        // estava enviado -> agora "Editar"
+        setSent(card, ta, btn, false);
+        warn.classList.add('show');
+        ta.focus();
+      }
+      refresh();
+    });
+
+    // se editar e realmente mudar em relação ao enviado, mantém aviso
+    ta.addEventListener('input', function(){
+      if(state[idx] && state[idx].sent && ta.value.trim() !== state[idx].answer){
+        warn.classList.add('show');
+      }
+    });
+  });
+
+  function setSent(card, ta, btn, sent){
+    if(sent){
+      card.classList.add('done');
+      ta.setAttribute('readonly','readonly');
+      btn.textContent = 'Editar resposta';
+      btn.classList.add('ghost');
+    } else {
+      card.classList.remove('done');
+      ta.removeAttribute('readonly');
+      btn.textContent = 'Salvar alteração 🧱';
+      btn.classList.remove('ghost');
+    }
+  }
+
+  var prevDone = null;
+  function refresh(){
+    var done = 0;
+    qs.forEach(function(card){ if(card.classList.contains('done')) done++; });
+    document.getElementById('count').textContent = done;
+    var bricks = document.querySelectorAll('.brick');
+    qs.forEach(function(card){
+      var i = +card.getAttribute('data-idx');
+      if(card.classList.contains('done')) bricks[i].classList.add('on'); else bricks[i].classList.remove('on');
+    });
+    var flag = document.getElementById('flag');
+    var finale = document.getElementById('finale');
+    if(done === 6){
+      if(flag){ flag.style.transition='opacity .6s ease'; flag.setAttribute('opacity','1'); }
+      finale.classList.add('show');
+      buildLink();
+      if(prevDone !== null && prevDone < 6) celebrate();
+    } else {
+      finale.classList.remove('show');
+      if(flag) flag.setAttribute('opacity','0');
+    }
+    prevDone = done;
+  }
+
+  function celebrate(){
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    launchCelebration();
+  }
+  // === Celebração idêntica ao app Falcon (BLOCO 11 tela-ritual.js) ===
+  function launchCelebration() {
+    document.getElementById('celebration-kf')?.remove();
+    const s = document.createElement('style');
+    s.id = 'celebration-kf';
+    s.textContent = `
+      @keyframes confettiFall {
+        0%   { transform: translateY(0) rotateZ(var(--r)); opacity:1; }
+        85%  { opacity:1; }
+        100% { transform: translateY(110vh) rotateZ(calc(var(--r) + 540deg)); opacity:0; }
+      }
+      @keyframes balloonRise {
+        0%   { transform: translateY(0); }
+        100% { transform: translateY(-150vh); }
+      }
+    `;
+    document.head.appendChild(s);
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9998;overflow:hidden';
+    document.body.appendChild(overlay);
+
+    const confColors = ['#7c3aed','#10b981','#f59e0b','#ef4444','#3b82f6','#ec4899','#06b6d4','#a855f7','#f97316','#14b8a6'];
+    const starPath = 'M10,0 L12.35,6.76 L19.51,6.91 L13.80,11.24 L15.88,18.09 L10,14 L4.12,18.09 L6.20,11.24 L0.49,6.91 L7.65,6.76 Z';
+
+    for (let i = 0; i < 100; i++) {
+      const color = confColors[i % confColors.length];
+      const left  = Math.random() * 100;
+      const rot   = Math.floor(Math.random() * 360);
+      const delay = Math.random() * 1.8;
+      const dur   = 2.2 + Math.random() * 2.0;
+      const anim  = `confettiFall ${dur}s cubic-bezier(.25,.46,.45,.94) ${delay}s both`;
+      const base  = `position:absolute;top:-24px;left:${left}%;--r:${rot}deg;animation:${anim};`;
+      const kind  = i % 5;
+
+      if (kind === 1) {
+        const sz = 8 + Math.random() * 8;
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 20 20');
+        svg.setAttribute('width', sz);
+        svg.setAttribute('height', sz);
+        svg.style.cssText = base;
+        const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        p.setAttribute('d', starPath);
+        p.setAttribute('fill', color);
+        svg.appendChild(p);
+        overlay.appendChild(svg);
+      } else if (kind === 4) {
+        const el = document.createElement('div');
+        const w  = 2 + Math.random() * 2;
+        const h  = 14 + Math.random() * 10;
+        el.style.cssText = base + `width:${w}px;height:${h}px;background:${color};border-radius:1px;`;
+        overlay.appendChild(el);
+      } else {
+        const sz = 5 + Math.random() * 7;
+        const el = document.createElement('div');
+        el.style.cssText = base + `width:${sz}px;height:${sz}px;background:${color};border-radius:50%;`;
+        overlay.appendChild(el);
+      }
+    }
+
+    const balloonColors = ['#7c3aed','#10b981','#f59e0b','#3b82f6','#ef4444','#ec4899','#06b6d4','#f97316'];
+    [5, 17, 29, 41, 53, 65, 77, 89].forEach((baseLeft, i) => {
+      const left   = baseLeft + (Math.random() * 8 - 4);
+      const sz     = 68 + Math.floor(Math.random() * 52);
+      const svgH   = Math.round(sz * 1.85);
+      const startB = -(svgH + 20 + Math.floor(Math.random() * 120));
+      const delay  = Math.random() * 1.6;
+      const dur    = 2.8 + Math.random() * 2.0;
+      const zIdx   = Math.round(sz / 20);
+      const c      = balloonColors[i];
+
+      const wrap = document.createElement('div');
+      wrap.style.cssText = `position:absolute;bottom:${startB}px;left:${left}%;z-index:${zIdx};animation:balloonRise ${dur}s ease-out ${delay}s both;`;
+      wrap.innerHTML = `<svg width="${sz}" height="${svgH}" viewBox="0 0 60 111" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="30" cy="28" rx="26" ry="28" fill="${c}"/>
+        <ellipse cx="19" cy="15" rx="9" ry="7" fill="white" opacity="0.25"/>
+        <ellipse cx="38" cy="12" rx="4" ry="3" fill="white" opacity="0.15"/>
+        <polygon points="30,56 27,62 33,62" fill="${c}"/>
+        <path d="M30 62 Q40 75 22 88 Q10 98 28 108" stroke="#555" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>`;
+      overlay.appendChild(wrap);
+    });
+
+    setTimeout(() => overlay.remove(), 5500);
+  }
+
+  function buildLink(){
+    var msg = "🏰 Andar 1 — Castelo da Larissa (Identidade de Marca)\n\n";
+    qs.forEach(function(card){
+      var i = +card.getAttribute('data-idx');
+      var a = (state[i] && state[i].answer) ? state[i].answer : "—";
+      msg += (i+1) + ") " + TITLES[i] + ":\n" + a + "\n\n";
+    });
+    document.getElementById('sendBtn').setAttribute('href', "https://wa.me/"+PHONE+"?text="+encodeURIComponent(msg));
+  }
+
+  refresh();
+})();
+</script>
