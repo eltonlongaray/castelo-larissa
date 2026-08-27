@@ -98,6 +98,22 @@
   .btn-wpp:hover{ transform:translateY(-1px); }
 
   .foot{ text-align:center; color:#f3e4d6; opacity:.85; font-size:.82rem; margin-top:1.6rem; }
+
+  /* ---------- VER RESPOSTAS ---------- */
+  .ver-resp{ display:block; width:fit-content; margin:0 auto 1.3rem; font-family:inherit; font-weight:700; font-size:.9rem; cursor:pointer;
+    background:rgba(255,250,240,.92); color:#5a3378; border:1px solid rgba(90,51,120,.3); border-radius:999px; padding:.6em 1.3em; transition:transform .2s; }
+  .ver-resp:hover{ transform:translateY(-1px); background:#fff; }
+  .resp-modal{ position:fixed; inset:0; z-index:9990; background:rgba(29,21,51,.62); display:flex; align-items:center; justify-content:center; padding:1rem; }
+  .resp-modal[hidden]{ display:none; }
+  .resp-box{ background:var(--cream); border-radius:18px; max-width:34rem; width:100%; max-height:85vh; overflow:auto; box-shadow:0 20px 50px rgba(0,0,0,.4); }
+  .resp-head{ position:sticky; top:0; background:var(--cream); display:flex; align-items:center; justify-content:space-between; padding:1rem 1.2rem; border-bottom:1px solid var(--line); }
+  .resp-head h3{ font-size:1.2rem; }
+  .resp-x{ border:none; background:none; font-size:1.3rem; cursor:pointer; color:var(--ink-soft); line-height:1; padding:.2rem .4rem; }
+  .resp-item{ padding:1rem 1.2rem; border-bottom:1px solid var(--line); }
+  .resp-item:last-child{ border-bottom:none; }
+  .resp-item .rt{ font-weight:700; color:#5a3378; font-size:.9rem; margin-bottom:.3rem; }
+  .resp-item .ra{ color:var(--ink-soft); font-size:.95rem; white-space:pre-wrap; }
+  .resp-item .ra.vazio{ font-style:italic; opacity:.6; }
 </style>
 
 <div class="wrap">
@@ -157,6 +173,8 @@
     <p style="font-size:.84rem;">✏️ Pode editar depois se quiser — mas se mudar algo já enviado, <b>me avise</b> pra eu atualizar.</p>
   </div>
 
+  <button class="ver-resp" id="verResp">📜 Ver minhas respostas</button>
+
   <!-- ============ PERGUNTAS ============ -->
   <div id="questions">
     <!-- 1 -->
@@ -213,6 +231,13 @@
   </div>
 
   <p class="foot">Feito com carinho pra você, Larissa. 🌙</p>
+</div>
+
+<div class="resp-modal" id="respModal" hidden>
+  <div class="resp-box">
+    <div class="resp-head"><h3>📜 Suas respostas — Andar 1</h3><button class="resp-x" id="respClose" aria-label="Fechar">✕</button></div>
+    <div id="respBody"></div>
+  </div>
 </div>
 
 <script>
@@ -443,5 +468,23 @@
   window.addEventListener('focus', autofillArq);
   window.addEventListener('storage', function(e){ if(e.key==='castelo-larissa-arq-result') autofillArq(); });
   autofillArq();
+
+  // === Ver minhas respostas (revisar quando quiser) ===
+  var respModal = document.getElementById('respModal');
+  function abrirResp(){
+    var body = document.getElementById('respBody'); body.innerHTML='';
+    qs.forEach(function(card){
+      var i = +card.getAttribute('data-idx');
+      var a = (state[i] && state[i].answer) ? state[i].answer : '';
+      var div = document.createElement('div'); div.className='resp-item';
+      var rt = document.createElement('div'); rt.className='rt'; rt.textContent = (i+1)+') '+TITLES[i];
+      var ra = document.createElement('div'); ra.className='ra'+(a?'':' vazio'); ra.textContent = a || 'Ainda não respondida';
+      div.appendChild(rt); div.appendChild(ra); body.appendChild(div);
+    });
+    respModal.hidden = false;
+  }
+  document.getElementById('verResp').addEventListener('click', abrirResp);
+  document.getElementById('respClose').addEventListener('click', function(){ respModal.hidden = true; });
+  respModal.addEventListener('click', function(e){ if(e.target===respModal) respModal.hidden = true; });
 })();
 </script>
