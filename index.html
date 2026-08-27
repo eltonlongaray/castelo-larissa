@@ -223,6 +223,9 @@
     "Decisões importantes","O que te emociona","Sonhos/medos/valores/forças",
     "5 habilidades e paixões","Quem mais poderia ajudar","Arquétipo de marca"
   ];
+  // Supabase (projeto realeza-holistica) — grava as respostas automaticamente
+  var SB_URL = "https://gopqajnivmbxjqsiznqi.supabase.co";
+  var SB_KEY = "sb_publishable_YBF0cSQt0IlTqVhCyRlduQ_ij2CHBZ5";
   var qs = Array.prototype.slice.call(document.querySelectorAll('.q'));
   var state = load();
 
@@ -295,7 +298,8 @@
       if(flag){ flag.style.transition='opacity .6s ease'; flag.setAttribute('opacity','1'); }
       buildLink();
       if(prevDone !== null && prevDone < 6){
-        // Acabou de completar: roda a celebração INTEIRA e só depois direciona
+        // Acabou de completar: salva no banco, roda a celebração INTEIRA e só depois direciona
+        salvarNoBanco();
         var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         celebrate();
         if(rm){ finale.classList.add('show'); }
@@ -402,14 +406,28 @@
     setTimeout(() => overlay.remove(), 5500);
   }
 
-  function buildLink(){
+  function montarTexto(){
     var msg = "🏰 Andar 1 — Castelo da Larissa (Identidade de Marca)\n\n";
     qs.forEach(function(card){
       var i = +card.getAttribute('data-idx');
       var a = (state[i] && state[i].answer) ? state[i].answer : "—";
       msg += (i+1) + ") " + TITLES[i] + ":\n" + a + "\n\n";
     });
-    document.getElementById('sendBtn').setAttribute('href', "https://wa.me/"+PHONE+"?text="+encodeURIComponent(msg));
+    return msg;
+  }
+  function buildLink(){
+    document.getElementById('sendBtn').setAttribute('href', "https://wa.me/"+PHONE+"?text="+encodeURIComponent(montarTexto()));
+  }
+  // Salva automaticamente no Supabase quando ela conclui o andar (uma vez)
+  function salvarNoBanco(){
+    try{ if(localStorage.getItem('castelo-larissa-andar1-banco')==='1') return; }catch(e){}
+    var respostas = {};
+    qs.forEach(function(card){ var i=+card.getAttribute('data-idx'); respostas[(i+1)+') '+TITLES[i]] = (state[i]&&state[i].answer)||''; });
+    fetch(SB_URL + "/rest/v1/respostas_castelo", {
+      method:"POST",
+      headers:{ "apikey":SB_KEY, "Authorization":"Bearer "+SB_KEY, "Content-Type":"application/json", "Prefer":"return=minimal" },
+      body: JSON.stringify({ aluna:"Larissa", andar:1, respostas:respostas, texto:montarTexto() })
+    }).then(function(r){ if(r.ok){ try{ localStorage.setItem('castelo-larissa-andar1-banco','1'); }catch(e){} } }).catch(function(){});
   }
 
   refresh();
